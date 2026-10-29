@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fradragskalkulator for gründeren 2026</title>
+<style>
+  :root {
+    --bg: #0a0612;
+    --card: #161022;
+    --primary: #7c5cfc;
+    --primary-light: #a78bfa;
+    --accent: #8b5cf6;
+    --accent-dark: #6d28d9;
+    --success: #34d399;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #2d2142;
+    --shadow: 0 4px 24px rgba(124, 92, 252, 0.15);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    background: linear-gradient(135deg, #1a1030 0%, #2d1b4e 100%);
+    color: white;
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 0.4rem;
+    font-size: 1.85rem;
+    font-weight: 700;
+  }
+  header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+  }
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    background: #161022;
+    padding: 0.4rem;
+    border-radius: 12px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 0.7rem;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: white;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .card h2 {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+    color: var(--primary);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 680px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: var(--text);
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border 0.2s;
+    font-family: inherit;
+    background: #0f0a1a;
+    color: var(--text);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(26, 90, 158, 0.15);
+  }
+  .result-box {
+    background: linear-gradient(135deg, #1a1030 0%, #241540 100%);
+    border: 1px solid #4c1d95;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .result-box h3 {
+    margin: 0 0 0.5rem;
+    color: var(--primary-light);
+    font-size: 1.1rem;
+  }
+  .big-number {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--success);
+    margin: 0.3rem 0;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    text-align: left;
+  }
+  .result-item {
+    background: #0f0a1a;
+    padding: 0.9rem;
+    border-radius: 10px;
+    border: 1px solid #2d2142;
+  }
+  .result-item strong {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .note {
+    background: #1a1520;
+    border-left: 4px solid #a78bfa;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #c4b5fd;
+    margin-top: 1.5rem;
+  }
+  .qa-section {
+    margin-top: 1rem;
+  }
+  .qa-item {
+    background: #0f0a1a;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .qa-item strong {
+    color: var(--primary);
+  }
+  .help-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 6px;
+    cursor: pointer;
+    border: none;
+    vertical-align: middle;
+  }
+  .help-text {
+    display: none;
+    background: #0f0a1a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .help-text.show { display: block; }
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Fradragskalkulator for gründeren</h1>
+  <p>Estimert skattebesparelse for ENK • 2026-satser</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('calc')">Kalkulator</button>
+    <button class="tab-btn" onclick="showTab('qa')">Spørsmål og svar</button>
+  </div>
+
+  <div id="calc" class="tab-content active">
+  <div class="card">
+    <h2>Inntekt og kostnader</h2>
+    <div class="grid">
+      <div>
+        <label id="lbl-omsetning">Omsetning (uten MVA) <button class="help-btn" onclick="toggleHelp('h-omsetning')">?</button></label>
+        <input type="number" id="omsetning" value="500000" oninput="calculate()">
+        <div id="h-omsetning" class="help-text">Total salgsinntekt uten MVA.<br><strong>Dokumentasjon:</strong> Fakturaer.</div>
+      </div>
+      <div>
+        <label id="lbl-andre">Andre inntekter <button class="help-btn" onclick="toggleHelp('h-andre')">?</button></label>
+        <input type="number" id="andre" value="0" oninput="calculate()">
+        <div id="h-andre" class="help-text">Tilskudd, renter osv.<br><strong>Dokumentasjon:</strong> Avtale eller bilag.</div>
+      </div>
+      <div>
+        <label>Hjemmekontor <button class="help-btn" onclick="toggleHelp('h-hjemme')">?</button></label>
+        <select id="hjemme" onchange="calculate()">
+          <option value="standard">Standard (2 240 kr/år)</option>
+          <option value="faktisk">Faktiske kostnader</option>
+        </select>
+        <div id="h-hjemme" class="help-text">Eget rom bare til næring. Standard er enklest. Faktisk gir ofte mer.<br><strong>Dokumentasjon:</strong> At rommet brukes eksklusivt, eller areal + kvitteringer.</div>
+      </div>
+      <div id="faktisk-wrap" class="hidden">
+        <label id="lbl-faktisk">Faktiske hjemmekontorkostnader <button class="help-btn" onclick="toggleHelp('h-faktisk')">?</button></label>
+        <input type="number" id="faktisk" value="0" oninput="calculate()">
+        <div id="h-faktisk" class="help-text">Andel av husleie, strøm osv. etter areal.<br><strong>Dokumentasjon:</strong> Arealberegning + kvitteringer.</div>
+      </div>
+      <div>
+        <label id="lbl-km">Kilometer <button class="help-btn" onclick="toggleHelp('h-km')">?</button></label>
+        <input type="number" id="km" value="2000" oninput="calculate()">
+        <div id="h-km" class="help-text">Yrkeskjøring med privatbil. 3,50 kr/km under ca. 6 000 km/år. 2000 er bare eksempel.<br><strong>Dokumentasjon:</strong> Kjørebok.</div>
+      </div>
+      <div>
+        <label id="lbl-utstyr">Utstyr under 30 000 kr <button class="help-btn" onclick="toggleHelp('h-utstyr')">?</button></label>
+        <input type="number" id="utstyr" value="15000" oninput="calculate()">
+        <div id="h-utstyr" class="help-text">PC, telefon, verktøy under 30 000 kr føres direkte.<br><strong>Dokumentasjon:</strong> Kvittering.</div>
+      </div>
+      <div>
+        <label id="lbl-programvare">Programvare <button class="help-btn" onclick="toggleHelp('h-programvare')">?</button></label>
+        <input type="number" id="programvare" value="8000" oninput="calculate()">
+        <div id="h-programvare" class="help-text">Regnskap, Adobe, hosting osv.<br><strong>Dokumentasjon:</strong> Faktura.</div>
+      </div>
+      <div>
+        <label id="lbl-kurs">Kurs <button class="help-btn" onclick="toggleHelp('h-kurs')">?</button></label>
+        <input type="number" id="kurs" value="5000" oninput="calculate()">
+        <div id="h-kurs" class="help-text">Kurs som holder deg oppdatert i faget.<br><strong>Dokumentasjon:</strong> Kvittering + relevans.</div>
+      </div>
+      <div>
+        <label id="lbl-mobil">Mobil + internett <button class="help-btn" onclick="toggleHelp('h-mobil')">?</button></label>
+        <input type="number" id="mobil" value="6000" oninput="calculate()">
+        <div id="h-mobil" class="help-text">Næringsandel. Privat bruk tilbakeføres med 4 392 kr.<br><strong>Dokumentasjon:</strong> Fakturaer + forklaring.</div>
+      </div>
+      <div>
+        <label id="lbl-oppstart">Oppstart <button class="help-btn" onclick="toggleHelp('h-oppstart')">?</button></label>
+        <input type="number" id="oppstart" value="10000" oninput="calculate()">
+        <div id="h-oppstart" class="help-text">Kostnader før oppstart kan føres første året.<br><strong>Dokumentasjon:</strong> Kvitteringer.</div>
+      </div>
+      <div>
+        <label id="lbl-andreKost">Andre kostnader <button class="help-btn" onclick="toggleHelp('h-andreKost')">?</button></label>
+        <input type="number" id="andreKost" value="20000" oninput="calculate()">
+        <div id="h-andreKost" class="help-text">Forsikring, regnskapsfører, markedsføring osv.<br><strong>Dokumentasjon:</strong> Kvittering med formål.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-box">
+    <h3>Estimert skattebesparelse</h3>
+    <div class="big-number" id="besparelse">0 kr</div>
+    <div class="sub">Ca. 32,8 % skatt på fradragene</div>
+    <div class="result-grid">
+      <div class="result-item">
+        <strong>Sum fradrag</strong>
+        <span id="sumFradrag">0 kr</span>
+      </div>
+      <div class="result-item">
+        <strong>Estimert overskudd</strong>
+        <span id="overskudd">0 kr</span>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div id="qa" class="tab-content">
+  <div class="card">
+    <h2>Spørsmål og svar</h2>
+    <div class="qa-section" id="qa-list">
+      <div class="qa-item">
+        <strong>Hva er forskjellen på standard og faktisk fradrag for hjemmekontor?</strong>
+        <p>Standardfradrag er et fast beløp på 2 240 kr per år (2026) hvis du har et eget rom som brukes eksklusivt til næring. Faktisk fradrag er din andel av reelle kostnader (husleie, strøm, forsikring osv.) basert på areal.</p>
+      </div>
+      <div class="qa-item">
+        <strong>Kan jeg ta fradrag hvis det er hobby?</strong>
+        <p>Nei. Hvis aktiviteten regnes som hobby, får du normalt ikke fradrag for kostnader. For å regnes som næring må den over tid være egnet til å gi overskudd og ha et visst omfang.</p>
+      </div>
+      <div class="qa-item">
+        <strong>Hva er personfradrag, og påvirker det kalkulatoren?</strong>
+        <p>Personfradrag er et fast bunnfradrag på 114 540 kr i 2026 som alle får automatisk. Det trekkes fra den samlede inntekten din (lønn + næring) før 22 % skatt beregnes.</p>
+        <p><strong>Har du lønn ved siden av</strong> som allerede er over ca. 115 000 kr, er personfradraget brukt opp på lønnen. Da skattlegges overskuddet fra ENK-en fra første krone, og kalkulatoren (32,8 %) gir et greit anslag.</p>
+        <p><strong>Har du ingen annen inntekt</strong>, kan personfradraget redusere eller fjerne skatten på næringsinntekten helt. Kalkulatoren tar ikke med dette i dag.</p>
+      </div>
+      <div class="qa-item">
+        <strong>Når lønner det seg å gå fra ENK til AS?</strong>
+        <p>I ENK skattlegges hele overskuddet som personinntekt (opp til ca. 50,6 % marginalskatt). I AS betaler selskapet bare 22 % så lenge pengene står i selskapet. Ekstra skatt kommer først når du tar ut lønn eller utbytte.</p>
+        <p><strong>Tommelfingerregel:</strong> AS begynner ofte å lønne seg når overskuddet ligger rundt 500 000–800 000 kr <em>og</em> du ikke trenger å ta ut alt privat hvert år. Da kan du reinvestere mer. Trenger du å ta ut det meste, er forskjellen mindre, og ENK er enklere.</p>
+      </div>
+      <div class="qa-item">
+        <strong>Er det grenser for fradrag, f.eks. kurs?</strong>
+        <p><strong>Kurs:</strong> Ingen beløpsgrense. Du kan trekke fra kurs som vedlikeholder eller oppdaterer kompetansen din i faget du allerede driver med. Helt ny utdanning (f.eks. en ny bachelor) gir normalt ikke fradrag.</p>
+        <p><strong>Utstyr:</strong> Under 30 000 kr kan føres direkte samme år. Over 30 000 kr (og levetid over 3 år) må avskrives over flere år.</p>
+        <p><strong>Andre:</strong> Hjemmekontor standard 2 240 kr/år. Kilometer 3,50 kr/km under ca. 6 000 km/år. Mobil: se neste spørsmål.</p>
+      </div>
+      <div class="qa-item">
+        <strong>Mobil og internett – kan jeg bare melde inn totalbeløpet?</strong>
+        <p>Du fører den faktiske kostnaden (f.eks. 12 000 kr). Deretter legger Skatteetaten automatisk til et fast beløp på <strong>4 392 kr</strong> som skattepliktig fordel for privat bruk.</p>
+        <p>Netto blir det at du får fradrag for kostnaden minus 4 392 kr. Du «får ikke 4 392 kr tilbake» – beløpet reduserer bare fradraget ditt.</p>
+        <p>Eksempel: 12 000 kr kostnad → fradrag 12 000 − 4 392 = 7 608 kr.</p>
+      </div>
+    </div>
+    <div style="margin-top:1.25rem;">
+      <label>Legg til eget spørsmål</label>
+      <textarea id="new-question" placeholder="Skriv spørsmålet ditt her..."></textarea>
+      <label style="margin-top:0.75rem;">Svar</label>
+      <textarea id="new-answer" placeholder="Skriv svaret her..."></textarea>
+      <button onclick="addQA()" style="margin-top:0.75rem; padding:0.7rem 1.2rem; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:600; cursor:pointer;">Legg til</button>
+    </div>
+  </div>
+  </div>
+
+  <div class="note">
+    <strong>Viktig:</strong> Dette er en forenklet modell for inntektsåret 2026. Den tar ikke hensyn til trinnskatt, personfradrag, lønn ved siden av, avskrivninger over flere år eller MVA. Alltid dokumenter fradrag og verifiser med Skatteetaten eller regnskapsfører. Satser kan endres.
+  </div>
+</div>
+
+<footer>
+  Fradragskalkulator for gründeren • Oppdatert med 2026-satser • Ikke juridisk eller skatterådgivning
+</footer>
+
+<script>
+const KM_SATS = 3.50;
+const HJEMME_STANDARD = 2240;
+const MARGINAL = 0.328; // 22% + 10.8%
+
+function showTab(id) {
+  document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  event.target.classList.add("active");
+}
+
+function toggleHelp(id) {
+  document.getElementById(id).classList.toggle("show");
+}
+
+function formatKr(n) {
+  if (isNaN(n) || n === null) return "0 kr";
+  return Math.round(n).toLocaleString("nb-NO") + " kr";
+}
+
+function calculate() {
+  const omsetning = +document.getElementById("omsetning").value || 0;
+  const andre = +document.getElementById("andre").value || 0;
+  const hjemmeType = document.getElementById("hjemme").value;
+  const faktiskWrap = document.getElementById("faktisk-wrap");
+  faktiskWrap.classList.toggle("hidden", hjemmeType !== "faktisk");
+  let hjemme = 0;
+  if (hjemmeType === "standard") {
+    hjemme = HJEMME_STANDARD;
+  } else {
+    hjemme = +document.getElementById("faktisk").value || 0;
+  }
+  const km = (+document.getElementById("km").value || 0) * KM_SATS;
+  const utstyr = +document.getElementById("utstyr").value || 0;
+  const programvare = +document.getElementById("programvare").value || 0;
+  const kurs = +document.getElementById("kurs").value || 0;
+  const mobil = +document.getElementById("mobil").value || 0;
+  const oppstart = +document.getElementById("oppstart").value || 0;
+  const andreKost = +document.getElementById("andreKost").value || 0;
+
+  const sumFradrag = hjemme + km + utstyr + programvare + kurs + mobil + oppstart + andreKost;
+  const inntekt = omsetning + andre;
+  const overskudd = Math.max(0, inntekt - sumFradrag);
+  const besparelse = sumFradrag * MARGINAL;
+
+  document.getElementById("besparelse").textContent = formatKr(besparelse);
+  document.getElementById("sumFradrag").textContent = formatKr(sumFradrag);
+  document.getElementById("overskudd").textContent = formatKr(overskudd);
+}
+
+function addQA() {
+  const q = document.getElementById("new-question").value.trim();
+  const a = document.getElementById("new-answer").value.trim();
+  if (!q || !a) return;
+  const list = document.getElementById("qa-list");
+  const item = document.createElement("div");
+  item.className = "qa-item";
+  item.innerHTML = `<strong>${escapeHtml(q)}</strong><p>${escapeHtml(a)}</p>`;
+  list.appendChild(item);
+  document.getElementById("new-question").value = "";
+  document.getElementById("new-answer").value = "";
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Init
+calculate();
+</script>
+</body>
+</html>
